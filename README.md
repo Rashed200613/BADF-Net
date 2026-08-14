@@ -65,7 +65,7 @@ The overall framework consists of five principal components: (i) an ImageNet-pre
   <em>Figure 3. Internal structure of the fusion and decoding modules — (C) CSBF projects, resizes, and adaptively weights the four BCE outputs into a fused boundary feature B; (D) each adaptive decoder block applies attention-gated skip fusion, boundary-guided gating, and residual refinement.</em>
 </p>
 
-> **Note:** Place the corresponding figure images (exported from the paper) under `Architecture/` using the filenames referenced above for them to render correctly.
+
 
 ### Component-to-Limitation Mapping
 
