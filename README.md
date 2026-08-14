@@ -48,24 +48,24 @@ BADF-Net integrates a **Boundary-Aware Dynamic Attention (BADA)** module with **
 The overall framework consists of five principal components: (i) an ImageNet-pretrained ResNet-34 encoder, (ii) BADA followed by BCE at four encoder levels, (iii) Cross-Scale Boundary Fusion (CSBF), (iv) a four-stage adaptive boundary-guided decoder, and (v) a segmentation head with full-resolution interpolation.
 
 <p align="center">
-  <img src="figures/architecture_overview.png" alt="BADF-Net overall architecture" width="850"/>
+  <img src="Architecture/architecture_overview.png" alt="BADF-Net overall architecture" width="850"/>
   <br>
   <em>Figure 1. Overview of the proposed BADF-Net architecture. A ResNet-34 encoder produces skip features e1–e4, each refined by a BADA–BCE module and aggregated by Cross-Scale Boundary Fusion (CSBF) into a shared boundary feature B, which guides a four-stage adaptive decoder to produce the final segmentation.</em>
 </p>
 
 <p align="center">
-  <img src="figures/bada_bce_module.png" alt="BADA and BCE internal structure" width="750"/>
+  <img src="Architecture/bada_bce_module.png" alt="BADA and BCE internal structure" width="750"/>
   <br>
   <em>Figure 2. Internal structure of the boundary-refinement modules — (A) BADA fuses boundary-extraction, channel-attention, and spatial-attention branches, followed by residual refinement; (B) BCE converts the BADA output into a per-pixel confidence map.</em>
 </p>
 
 <p align="center">
-  <img src="figures/csbf_decoder_module.png" alt="CSBF and decoder block internal structure" width="800"/>
+  <img src="Architecture/csbf_decoder_module.png" alt="CSBF and decoder block internal structure" width="800"/>
   <br>
   <em>Figure 3. Internal structure of the fusion and decoding modules — (C) CSBF projects, resizes, and adaptively weights the four BCE outputs into a fused boundary feature B; (D) each adaptive decoder block applies attention-gated skip fusion, boundary-guided gating, and residual refinement.</em>
 </p>
 
-> **Note:** Place the corresponding figure images (exported from the paper) under `figures/` using the filenames referenced above for them to render correctly.
+> **Note:** Place the corresponding figure images (exported from the paper) under `Architecture/` using the filenames referenced above for them to render correctly.
 
 ### Component-to-Limitation Mapping
 
@@ -81,19 +81,55 @@ The overall framework consists of five principal components: (i) an ImageNet-pre
 
 ## Repository Contents
 
+### Directory Structure
+
+```
+BADF_Net/
+│
+├── Architecture/                     # Architecture diagrams / figures used in the paper and README
+│
+├── Kidney_dataset/                   # Kidney ultrasound dataset (capsule, CEC, medulla, cortex labels)
+│
+├── ablation_results/                 # Outputs of the ablation studies
+│   ├── Architectural_Ablation_Results
+│   └── Loss_Ablation_Results
+│
+├── checkpoints/                      # All trained model weights and corresponding results
+│
+├── network/                          # Core model architecture
+│   ├── BADF-Net.py                   # Full BADF-Net implementation (BADA, BCE, CSBF, decoder)
+│   └── BADF-Net_Ablation.py          # Configurable variant used for architectural ablation runs
+│
+├── Att-UNet_Test_Results.py          # Evaluation script for the Att-UNet baseline
+├── dataloader.py                     # Dataset loading and preprocessing (merged kidney + spleen set)
+├── losses_ablation.py                # Loss-function variants used in the loss ablation study
+├── run_architecture_ablation.py      # Driver script for the architectural ablation study
+├── run_loss_ablation.py              # Driver script for the loss-function ablation study
+├── test.py                           # Main evaluation script (Dice, HD95, ASD, PA, MPA, Precision, Recall, F1)
+├── test-1.py                         # Additional/variant evaluation script
+├── test-2.py                         # Additional/variant evaluation script
+└── train.py                          # Training entry point
+```
+
+### File & Directory Reference
+
 | Path | Description |
 |---|---|
-| `src/` | Model definitions (BADA, BCE, CSBF, adaptive decoder, BADF-Net) and training/evaluation code |
-| `src/models/badf_net.py` | Full BADF-Net architecture implementation |
-| `src/datasets/` | Dataset loaders for the merged kidney + spleen ultrasound dataset |
-| `src/losses/` | Composite Dice–Focal loss and other loss formulations used in ablations |
-| `scripts/train.py` | Training entry point |
-| `scripts/evaluate.py` | Evaluation script (Dice, HD95, ASD, PA, MPA, Precision, Recall, F1) |
-| `scripts/ablation/` | Scripts for architectural and loss-function ablation studies |
-| `configs/` | YAML/JSON configuration files for reproducing reported experiments |
-| `weights/` | Pretrained model checkpoints (see [Data Availability](#dataset)) |
-| `figures/` | Architecture diagrams and qualitative result figures |
-| `paper/BADF-Net.pdf` | Manuscript PDF (see [Citation](#citation) for the published link) |
+| `Architecture/` | Architecture diagrams (encoder, BADA/BCE, CSBF/decoder) referenced in this README |
+| `Kidney_dataset/` | Kidney ultrasound dataset used for the merged multi-anatomical (MAS) dataset |
+| `ablation_results/Architectural_Ablation_Results` | Results from removing/replacing individual architectural components (Table 8) |
+| `ablation_results/Loss_Ablation_Results` | Results from comparing loss-function formulations (Table 9) |
+| `checkpoints/` | All trained model weights and their associated evaluation results |
+| `network/BADF-Net.py` | Full BADF-Net architecture — ResNet-34 encoder, BADA, BCE, CSBF, adaptive decoder |
+| `network/BADF-Net_Ablation.py` | Ablation-configurable version of BADF-Net used to toggle individual components |
+| `Att-UNet_Test_Results.py` | Test/evaluation script for the Att-UNet baseline comparison |
+| `dataloader.py` | Dataset loader for the merged kidney + spleen ultrasound dataset |
+| `losses_ablation.py` | Alternative loss formulations (Dice-only, Focal-only, Tversky, CE, composites) for ablation |
+| `run_architecture_ablation.py` | Runs the full architectural ablation sweep |
+| `run_loss_ablation.py` | Runs the full loss-function ablation sweep |
+| `test.py` | Main evaluation script — computes Dice, HD95, ASD, inference time, PA, MPA, Precision, Recall, F1 |
+| `test-1.py`, `test-2.py` | Supplementary evaluation scripts (e.g., baseline comparisons, alternate metric configurations) |
+| `train.py` | Training entry point for BADF-Net |
 | `README.md` | This file |
 
 ---
@@ -207,32 +243,42 @@ pip install -r requirements.txt
 ### Training
 
 ```bash
-python scripts/train.py \
-  --config configs/badf_net.yaml \
-  --data_root /path/to/merged_dataset \
+python train.py \
+  --data_root Kidney_dataset/ \
   --epochs 200 \
   --batch_size 4 \
   --lr 1e-4
 ```
 
+`train.py` uses the `BADF_Net` architecture defined in `network/BADF-Net.py` together with `dataloader.py` for data loading, and optimizes the composite Dice–Focal loss (see [Hyperparameters](#hyperparameters)).
+
 ### Evaluation
 
 ```bash
-python scripts/evaluate.py \
-  --checkpoint weights/badf_net_best.pth \
-  --data_root /path/to/merged_dataset \
-  --output_csv results/badf_net_metrics.csv
+python test.py \
+  --checkpoint checkpoints/badf_net_best.pth \
+  --data_root Kidney_dataset/ \
+  --output_csv ablation_results/badf_net_metrics.csv
 ```
 
-Outputs Dice Score, HD95, ASD, inference time, loss, Pixel Accuracy, Mean Pixel Accuracy, Precision, Recall, and F1-Score, plus a per-class confusion matrix.
+Outputs Dice Score, HD95, ASD, inference time, loss, Pixel Accuracy, Mean Pixel Accuracy, Precision, Recall, and F1-Score, plus a per-class confusion matrix. `test-1.py` and `test-2.py` provide supplementary evaluation configurations, and `Att-UNet_Test_Results.py` runs the equivalent evaluation for the Att-UNet baseline.
 
-### Inference on a Single Image
+### Architectural Ablation
 
 ```bash
-python scripts/predict.py \
-  --checkpoint weights/badf_net_best.pth \
-  --image path/to/image.png \
-  --output path/to/prediction_mask.png
+python run_architecture_ablation.py \
+  --config network/BADF-Net_Ablation.py \
+  --data_root Kidney_dataset/ \
+  --output_dir ablation_results/Architectural_Ablation_Results
+```
+
+### Loss-Function Ablation
+
+```bash
+python run_loss_ablation.py \
+  --losses losses_ablation.py \
+  --data_root Kidney_dataset/ \
+  --output_dir ablation_results/Loss_Ablation_Results
 ```
 
 ---
