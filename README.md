@@ -100,7 +100,6 @@ BADF_Net/
 │   ├── BADF-Net.py                   # Full BADF-Net implementation (BADA, BCE, CSBF, decoder)
 │   └── BADF-Net_Ablation.py          # Configurable variant used for architectural ablation runs
 │
-├── Att-UNet_Test_Results.py          # Evaluation script for the Att-UNet baseline
 ├── dataloader.py                     # Dataset loading and preprocessing (merged kidney + spleen set)
 ├── losses_ablation.py                # Loss-function variants used in the loss ablation study
 ├── run_architecture_ablation.py      # Driver script for the architectural ablation study
