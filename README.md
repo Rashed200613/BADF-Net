@@ -48,19 +48,19 @@ BADF-Net integrates a **Boundary-Aware Dynamic Attention (BADA)** module with **
 The overall framework consists of five principal components: (i) an ImageNet-pretrained ResNet-34 encoder, (ii) BADA followed by BCE at four encoder levels, (iii) Cross-Scale Boundary Fusion (CSBF), (iv) a four-stage adaptive boundary-guided decoder, and (v) a segmentation head with full-resolution interpolation.
 
 <p align="center">
-  <img src="Architecture/architecture_overview.png" alt="BADF-Net overall architecture" width="850"/>
+  <img src="Architecture/main_arc.png" alt="BADF-Net overall architecture" width="850"/>
   <br>
   <em>Figure 1. Overview of the proposed BADF-Net architecture. A ResNet-34 encoder produces skip features e1–e4, each refined by a BADA–BCE module and aggregated by Cross-Scale Boundary Fusion (CSBF) into a shared boundary feature B, which guides a four-stage adaptive decoder to produce the final segmentation.</em>
 </p>
 
 <p align="center">
-  <img src="Architecture/bada_bce_module.png" alt="BADA and BCE internal structure" width="750"/>
+  <img src="Architecture/arc_BADA_BCE.png" alt="BADA and BCE internal structure" width="750"/>
   <br>
   <em>Figure 2. Internal structure of the boundary-refinement modules — (A) BADA fuses boundary-extraction, channel-attention, and spatial-attention branches, followed by residual refinement; (B) BCE converts the BADA output into a per-pixel confidence map.</em>
 </p>
 
 <p align="center">
-  <img src="Architecture/csbf_decoder_module.png" alt="CSBF and decoder block internal structure" width="800"/>
+  <img src="Architecture/arc_CSBF.png" alt="CSBF and decoder block internal structure" width="800"/>
   <br>
   <em>Figure 3. Internal structure of the fusion and decoding modules — (C) CSBF projects, resizes, and adaptively weights the four BCE outputs into a fused boundary feature B; (D) each adaptive decoder block applies attention-gated skip fusion, boundary-guided gating, and residual refinement.</em>
 </p>
@@ -405,4 +405,10 @@ The authors declare no conflicts of interest.
 
 ## Contact
 
-For questions about the code or paper, please open a [GitHub Issue](https://github.com/rashed200613/BADF-Net/issues) or contact the corresponding authors listed above.
+For questions about the code or paper, please open a [GitHub Issue](https://github.com/rashed200613/BADF-Net/issues) or contact:
+
+| Name | Email |
+|---|---|
+| Md. Rashed | rashedulislam.ice.pust@gmail.com |
+
+Corresponding authors (see [Authors & Affiliations](#authors--affiliations)): imran05ice@pust.edu.bd, hossein.fotouhi@mdu.se
